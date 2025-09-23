@@ -9,7 +9,6 @@ import { useDeviceDetection, DetectedDevice } from '@/hooks/useDeviceDetection';
 import { 
   Cpu, 
   HardDrive, 
-  Zap,
   Thermometer,
   Wifi,
   AlertTriangle,
@@ -137,18 +136,20 @@ const Dashboard = () => {
             </div>
             <h2 className="text-xl font-semibold text-foreground">Connected Devices</h2>
             <Badge className="bg-primary/10 text-primary border-primary/20">
-              {connectedDevices.length} Devices
+              {connectedDevices.filter(device => device.isCurrent).length} Device
             </Badge>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {connectedDevices.map((device) => (
-              <DeviceCard 
-                key={device.id} 
-                device={device} 
-                onClick={() => handleDeviceClick(device)}
-              />
-            ))}
+            {connectedDevices
+              .filter(device => device.isCurrent) // ✅ only current device
+              .map((device) => (
+                <DeviceCard 
+                  key={device.id} 
+                  device={device} 
+                  onClick={() => handleDeviceClick(device)}
+                />
+              ))}
           </div>
         </div>
 
@@ -176,6 +177,18 @@ const Dashboard = () => {
                   <li>• CPU performance is optimal with room for additional workload</li>
                   <li>• Memory usage requires attention to prevent slowdowns</li>
                   <li>• Network security protocols are functioning correctly</li>
+                </ul>
+              </div>
+
+              {/* ✅ Taglines Section */}
+              <div className="text-sm text-muted-foreground">
+                <p className="mb-2"><strong>Maintenance Highlights:</strong></p>
+                <ul className="space-y-1 text-xs list-disc list-inside">
+                  <li>Smart Maintenance Alerts</li>
+                  <li>Detect Issues Before They Happen</li>
+                  <li>Stay Ahead with Predictive Maintenance</li>
+                  <li>Real-Time Device Health Monitoring</li>
+                  <li>Automatic Maintenance Detection</li>
                 </ul>
               </div>
             </div>
