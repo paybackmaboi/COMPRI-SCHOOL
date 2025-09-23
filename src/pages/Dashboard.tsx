@@ -1,7 +1,9 @@
 import Layout from '@/components/Layout';
 import StatusCard from '@/components/StatusCard';
+import DeviceCard from '@/components/DeviceCard';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { useDeviceDetection } from '@/hooks/useDeviceDetection';
 import { 
   Cpu, 
   HardDrive, 
@@ -10,10 +12,13 @@ import {
   Wifi,
   AlertTriangle,
   CheckCircle,
-  TrendingUp
+  TrendingUp,
+  Monitor
 } from 'lucide-react';
 
 const Dashboard = () => {
+  const { connectedDevices } = useDeviceDetection();
+  
   const systemStats = [
     {
       title: 'CPU Usage',
@@ -108,6 +113,25 @@ const Dashboard = () => {
           {systemStats.map((stat, index) => (
             <StatusCard key={index} {...stat} />
           ))}
+        </div>
+
+        {/* Connected Devices Section */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-primary/10 text-primary rounded-lg">
+              <Monitor className="w-5 h-5" />
+            </div>
+            <h2 className="text-xl font-semibold text-foreground">Connected Devices</h2>
+            <Badge className="bg-primary/10 text-primary border-primary/20">
+              {connectedDevices.length} Devices
+            </Badge>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {connectedDevices.map((device) => (
+              <DeviceCard key={device.id} device={device} />
+            ))}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
