@@ -40,3 +40,32 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Add this to your main CSS file */
+
+/* Make images and containers scale */
+img, .container {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Responsive typography */
+body {
+  font-size: 16px;
+}
+@media (max-width: 600px) {
+  body {
+    font-size: 14px;
+  }
+}
+
+/* Responsive layout example */
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.item {
+  flex: 1 1 300px;
+  min-width: 200px;
+}
