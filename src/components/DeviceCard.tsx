@@ -12,9 +12,10 @@ import { DetectedDevice } from '@/hooks/useDeviceDetection';
 
 interface DeviceCardProps {
   device: DetectedDevice;
+  onClick: () => void;
 }
 
-const DeviceCard = ({ device }: DeviceCardProps) => {
+const DeviceCard = ({ device, onClick }: DeviceCardProps) => {
   const getDeviceIcon = () => {
     switch (device.type) {
       case 'mobile':
@@ -46,7 +47,10 @@ const DeviceCard = ({ device }: DeviceCardProps) => {
   };
 
   return (
-    <Card className="p-4 bg-gradient-to-br from-card to-card/50 border-border/50">
+    <Card 
+      className="p-4 bg-gradient-to-br from-card to-card/50 border-border/50 cursor-pointer hover:bg-card/80 transition-colors" 
+      onClick={onClick}
+    >
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-primary/10 text-primary rounded-lg">

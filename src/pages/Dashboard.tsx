@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import Layout from '@/components/Layout';
 import StatusCard from '@/components/StatusCard';
 import DeviceCard from '@/components/DeviceCard';
+import DeviceModal from '@/components/DeviceModal';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { useDeviceDetection } from '@/hooks/useDeviceDetection';
+import { useDeviceDetection, DetectedDevice } from '@/hooks/useDeviceDetection';
 import { 
   Cpu, 
   HardDrive, 
@@ -18,6 +20,18 @@ import {
 
 const Dashboard = () => {
   const { connectedDevices } = useDeviceDetection();
+  const [selectedDevice, setSelectedDevice] = useState<DetectedDevice | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleDeviceClick = (device: DetectedDevice) => {
+    setSelectedDevice(device);
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setSelectedDevice(null);
+  };
   
   const systemStats = [
     {
@@ -129,7 +143,11 @@ const Dashboard = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {connectedDevices.map((device) => (
-              <DeviceCard key={device.id} device={device} />
+              <DeviceCard 
+                key={device.id} 
+                device={device} 
+                onClick={() => handleDeviceClick(device)}
+              />
             ))}
           </div>
         </div>
@@ -184,6 +202,12 @@ const Dashboard = () => {
             </div>
           </Card>
         </div>
+
+        <DeviceModal 
+          device={selectedDevice}
+          isOpen={isModalOpen}
+          onClose={handleModalClose}
+        />
       </div>
     </Layout>
   );
