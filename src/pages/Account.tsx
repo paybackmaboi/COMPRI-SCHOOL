@@ -5,26 +5,40 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Settings, Shield, User, Monitor, Bell, Activity, Calendar } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useAuth } from '@/contexts/AuthContext';
+import { Settings, Shield, User, Monitor, Bell, Activity, Calendar, CheckCircle, AlertCircle } from 'lucide-react';
 
 const Account = () => {
-  // 🔹 Load stored user or fallback
-  const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-
-  const [name, setName] = useState(storedUser.name || '');
-  const [email, setEmail] = useState(storedUser.email || '');
+  const { user } = useAuth();
+  const [name, setName] = useState(user?.name || '');
+  const [email, setEmail] = useState(user?.email || '');
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   useEffect(() => {
-    // keep sync if localStorage changes
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    setName(user.name || '');
-    setEmail(user.email || '');
-  }, []);
+    if (user) {
+      setName(user.name || '');
+      setEmail(user.email || '');
+    }
+  }, [user]);
 
   const handleUpdateProfile = () => {
-    const updatedUser = { name, email };
-    localStorage.setItem('user', JSON.stringify(updatedUser)); // ✅ Save to storage
-    alert('Profile updated successfully!');
+    if (!user) return;
+
+    // Update the user data in localStorage
+    const updatedUser = { ...user, name, email };
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+
+    // Update the registered users list as well
+    const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+    const userIndex = users.findIndex((u: any) => u.id === user.id);
+    if (userIndex !== -1) {
+      users[userIndex] = { ...users[userIndex], name, email };
+      localStorage.setItem('registeredUsers', JSON.stringify(users));
+    }
+
+    setMessage({ type: 'success', text: 'Profile updated successfully!' });
+    setTimeout(() => setMessage(null), 3000);
   };
 
   return (
@@ -36,6 +50,20 @@ const Account = () => {
           <p className="text-muted-foreground">Manage your profile and system preferences</p>
         </div>
 
+        {/* Success/Error Messages */}
+        {message && (
+          <Alert className={message.type === 'success' ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}>
+            {message.type === 'success' ? (
+              <CheckCircle className="h-4 w-4 text-green-600" />
+            ) : (
+              <AlertCircle className="h-4 w-4 text-red-600" />
+            )}
+            <AlertDescription className={message.type === 'success' ? 'text-green-700' : 'text-red-700'}>
+              {message.text}
+            </AlertDescription>
+          </Alert>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Profile Info */}
           <div className="lg:col-span-2 space-y-6">
@@ -45,9 +73,9 @@ const Account = () => {
                   <User className="w-8 h-8 text-primary-foreground" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold text-foreground">{name || "No Name Set"}</h2>
-                  <p className="text-muted-foreground">System User</p>
-                  <Badge className="mt-1 bg-success/10 text-success border-success/20">Active</Badge>
+                  <h2 className="text-xl font-semibold text-foreground">{user?.name || "No Name Set"}</h2>
+                  <p className="text-muted-foreground">{user?.email || "No email set"}</p>
+                  <Badge className="mt-1 bg-green-100 text-green-800 border-green-200">Active User</Badge>
                 </div>
               </div>
 
@@ -79,11 +107,53 @@ const Account = () => {
                     <Settings className="w-4 h-4 mr-2" />
                     Update Profile
                   </Button>
-                  <Button variant="outline">
+                  <Button variant="outline" disabled>
                     <Shield className="w-4 h-4 mr-2" />
                     Change Password
                   </Button>
                 </div>
+              </div>
+            </Card>
+
+            {/* Account Information */}
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold mb-4">Account Information</h3>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">Account Created:</span>
+                  <span className="font-medium">
+                    {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown'}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">User ID:</span>
+                  <span className="font-mono text-sm">{user?.id || 'Unknown'}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">Status:</span>
+                  <Badge className="bg-green-100 text-green-800 border-green-200">Verified</Badge>
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          {/* Quick Actions */}
+          <div className="space-y-6">
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
+              <div className="space-y-3">
+                <Button variant="outline" className="w-full justify-start" disabled>
+                  <Bell className="w-4 h-4 mr-2" />
+                  Notification Settings
+                </Button>
+                <Button variant="outline" className="w-full justify-start" disabled>
+                  <Shield className="w-4 h-4 mr-2" />
+                  Security Settings
+                </Button>
+                <Button variant="outline" className="w-full justify-start" disabled>
+                  <Activity className="w-4 h-4 mr-2" />
+                  Activity Log
+                </Button>
               </div>
             </Card>
           </div>

@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Layout from '@/components/Layout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   Send,
   Bot,
@@ -11,11 +12,14 @@ import {
   Lightbulb,
   Zap,
   Shield,
-  TrendingUp
+  TrendingUp,
+  Loader2,
+  AlertCircle,
+  Trash2
 } from 'lucide-react';
 
 interface Message {
-  id: number;
+  id: string;
   type: 'user' | 'assistant';
   content: string;
   timestamp: string;
@@ -24,108 +28,184 @@ interface Message {
 const Assistant = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
-      id: 1,
+      id: '1',
       type: 'assistant',
-      content: "Hello! I'm your System Monitor AI Assistant. I can help you understand your system performance, provide solutions to detected issues, and answer questions about system optimization. How can I assist you today?",
-      timestamp: '10:30 AM'
+      content: "Hello! I'm your System Monitor AI Assistant powered by Gemini AI. I can help you understand your system performance, provide solutions to detected issues, and answer questions about system optimization. How can I assist you today?",
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
   ]);
   const [inputMessage, setInputMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const suggestedQuestions = [
-    "Why is my CPU usage high?",
-    "How can I optimize memory usage?",
-    "What network security measures should I take?",
-    "How to improve system performance?"
+    "What devices are currently connected to my system?",
+    "How can I optimize my system performance?",
+    "What security measures should I implement?",
+    "How do I monitor CPU and memory usage?",
+    "What does the dashboard show me?",
+    "How can I track system activity?"
   ];
 
-  const handleSendMessage = () => {
-    if (!inputMessage.trim()) return;
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
-    const newUserMessage: Message = {
-      id: messages.length + 1,
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const handleSendMessage = async () => {
+    if (!inputMessage.trim() || isLoading) return;
+
+    const userMessage: Message = {
+      id: Date.now().toString(),
       type: 'user',
       content: inputMessage,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
 
-    // Simulate AI response
-    const aiResponse: Message = {
-      id: messages.length + 2,
-      type: 'assistant',
-      content: getAIResponse(inputMessage),
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    };
-
-    setMessages([...messages, newUserMessage, aiResponse]);
+    setMessages(prev => [...prev, userMessage]);
     setInputMessage('');
-  };
+    setIsLoading(true);
+    setError('');
 
-  const getAIResponse = (question: string): string => {
-    const lowerQuestion = question.toLowerCase();
-    
-    if (lowerQuestion.includes('cpu') || lowerQuestion.includes('processor')) {
-      return "Based on your system analysis, I've detected that Chrome.exe is consuming 23% of your CPU resources. Here are my recommendations: 1) Close unused browser tabs, 2) Check for Chrome extensions that might be resource-heavy, 3) Consider restarting Chrome if the issue persists. Your CPU temperature is currently optimal at 72°C.";
+    try {
+      // Prepare conversation history for the API
+      const conversationHistory = messages.map(msg => ({
+        role: msg.type,
+        content: msg.content
+      }));
+
+      const response = await fetch('http://localhost:5001/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: userMessage.content,
+          conversationHistory: conversationHistory
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        const aiMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          type: 'assistant',
+          content: data.response,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+
+        setMessages(prev => [...prev, aiMessage]);
+      } else {
+        setError(data.error || 'Failed to get AI response');
+      }
+    } catch (error) {
+      console.error('Chat error:', error);
+      setError('Failed to connect to AI assistant. Please make sure the backend server is running.');
+    } finally {
+      setIsLoading(false);
     }
-    
-    if (lowerQuestion.includes('memory') || lowerQuestion.includes('ram')) {
-      return "I've identified a memory leak in your Node.js application which is causing increasing memory usage. Immediate solutions: 1) Restart the Node.js application to free up memory, 2) Monitor the application for recurring issues, 3) Consider updating to the latest version if available. Your system has 8.2GB of 16GB RAM available.";
-    }
-    
-    if (lowerQuestion.includes('network') || lowerQuestion.includes('security')) {
-      return "I've detected unusual outbound traffic to 192.168.1.1 which requires attention. Security recommendations: 1) Review active network connections, 2) Update firewall rules to block suspicious traffic, 3) Run a comprehensive security scan, 4) Monitor network activity for the next hour. Your antivirus definitions are up to date.";
-    }
-    
-    if (lowerQuestion.includes('performance') || lowerQuestion.includes('optimize')) {
-      return "To optimize your system performance: 1) Address the memory leak in Node.js (restart application), 2) Manage Chrome's resource usage (close unused tabs), 3) Monitor the unusual network activity, 4) Keep system temperature below 80°C. Overall system health is good with these minor optimizations needed.";
-    }
-    
-    return "I understand your question about system monitoring. Based on current analysis, your system is performing well overall. I recommend focusing on the memory optimization and monitoring the detected network activity. Would you like me to provide specific steps for any particular area?";
   };
 
   const handleSuggestedQuestion = (question: string) => {
     setInputMessage(question);
   };
 
+  const clearChat = () => {
+    setMessages([
+      {
+        id: '1',
+        type: 'assistant',
+        content: "Hello! I'm your System Monitor AI Assistant powered by Gemini AI. I can help you understand your system performance, provide solutions to detected issues, and answer questions about system optimization. How can I assist you today?",
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      }
+    ]);
+    setError('');
+  };
+
   return (
     <Layout>
       <div className="p-6 space-y-6 h-full flex flex-col">
         {/* Header */}
-        <div className="flex items-center gap-3">
-          <div className="p-3 bg-gradient-to-br from-primary to-accent rounded-xl">
-            <Bot className="w-6 h-6 text-primary-foreground" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-3 bg-gradient-to-br from-primary to-accent rounded-xl">
+              <Bot className="w-6 h-6 text-primary-foreground" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">AI Assistant</h1>
+              <p className="text-muted-foreground">Powered by Gemini AI - Get intelligent insights and solutions</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">AI Assistant</h1>
-            <p className="text-muted-foreground">Get intelligent insights and solutions</p>
-          </div>
+          <Button 
+            onClick={clearChat}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2"
+          >
+            <Trash2 className="w-4 h-4" />
+            Clear Chat
+          </Button>
         </div>
+
+        {/* Error Alert */}
+        {error && (
+          <Alert className="border-red-200 bg-red-50">
+            <AlertCircle className="h-4 w-4 text-red-600" />
+            <AlertDescription className="text-red-700">{error}</AlertDescription>
+          </Alert>
+        )}
 
         {/* Chat Container */}
         <div className="flex-1 flex flex-col min-h-0">
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto space-y-4 mb-4">
+          <div className="flex-1 overflow-y-auto space-y-4 mb-4 pr-2">
             {messages.map((message) => (
               <div key={message.id} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`flex items-start gap-3 max-w-3xl ${message.type === 'user' ? 'flex-row-reverse' : ''}`}>
-                  <div className={`p-2 rounded-lg ${
+                <div className={`flex items-start gap-3 max-w-4xl ${message.type === 'user' ? 'flex-row-reverse' : ''}`}>
+                  <div className={`p-2 rounded-lg flex-shrink-0 ${
                     message.type === 'user' 
                       ? 'bg-primary text-primary-foreground' 
                       : 'bg-accent/10 text-accent border border-accent/20'
                   }`}>
                     {message.type === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
                   </div>
-                  <Card className={`p-4 ${
+                  <Card className={`p-4 max-w-full ${
                     message.type === 'user' 
                       ? 'bg-primary/10 border-primary/20' 
                       : 'bg-gradient-to-br from-card to-card/50 border-border/50'
                   }`}>
-                    <p className="text-sm text-foreground leading-relaxed">{message.content}</p>
+                    <div className="whitespace-pre-wrap text-sm text-foreground leading-relaxed">
+                      {message.content}
+                    </div>
                     <p className="text-xs text-muted-foreground mt-2">{message.timestamp}</p>
                   </Card>
                 </div>
               </div>
             ))}
+            
+            {/* Loading indicator */}
+            {isLoading && (
+              <div className="flex justify-start">
+                <div className="flex items-start gap-3 max-w-4xl">
+                  <div className="p-2 rounded-lg bg-accent/10 text-accent border border-accent/20 flex-shrink-0">
+                    <Bot className="w-4 h-4" />
+                  </div>
+                  <Card className="p-4 bg-gradient-to-br from-card to-card/50 border-border/50">
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="w-4 h-4 animate-spin text-accent" />
+                      <span className="text-sm text-muted-foreground">AI is thinking...</span>
+                    </div>
+                  </Card>
+                </div>
+              </div>
+            )}
+            
+            <div ref={messagesEndRef} />
           </div>
 
           {/* Suggested Questions */}
@@ -140,7 +220,7 @@ const Assistant = () => {
                   <Badge
                     key={index}
                     variant="outline"
-                    className="cursor-pointer hover:bg-primary/10 hover:border-primary/20 transition-colors"
+                    className="cursor-pointer hover:bg-primary/10 hover:border-primary/20 transition-colors text-xs"
                     onClick={() => handleSuggestedQuestion(question)}
                   >
                     {question}
@@ -158,29 +238,39 @@ const Assistant = () => {
                 onChange={(e) => setInputMessage(e.target.value)}
                 placeholder="Ask me about system performance, security, or optimizations..."
                 className="flex-1 bg-background/50 border-border/50 focus:border-primary"
-                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage()}
+                disabled={isLoading}
               />
               <Button 
                 onClick={handleSendMessage}
                 className="bg-gradient-to-r from-primary to-accent hover:opacity-90"
-                disabled={!inputMessage.trim()}
+                disabled={!inputMessage.trim() || isLoading}
               >
-                <Send className="w-4 h-4" />
+                {isLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Send className="w-4 h-4" />
+                )}
               </Button>
             </div>
             
-            <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
-              <div className="flex items-center gap-1">
-                <Zap className="w-3 h-3 text-accent" />
-                AI-Powered Analysis
+            <div className="flex items-center justify-between mt-3 text-xs text-muted-foreground">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-1">
+                  <Zap className="w-3 h-3 text-accent" />
+                  Gemini AI Powered
+                </div>
+                <div className="flex items-center gap-1">
+                  <Shield className="w-3 h-3 text-green-600" />
+                  Secure & Private
+                </div>
+                <div className="flex items-center gap-1">
+                  <TrendingUp className="w-3 h-3 text-primary" />
+                  Real-time Insights
+                </div>
               </div>
-              <div className="flex items-center gap-1">
-                <Shield className="w-3 h-3 text-success" />
-                Secure & Private
-              </div>
-              <div className="flex items-center gap-1">
-                <TrendingUp className="w-3 h-3 text-primary" />
-                Real-time Insights
+              <div className="text-xs">
+                Press Enter to send, Shift+Enter for new line
               </div>
             </div>
           </Card>

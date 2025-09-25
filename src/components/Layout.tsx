@@ -1,12 +1,15 @@
 import { ReactNode } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/contexts/AuthContext';
+import { Button } from '@/components/ui/button';
 import { 
   Monitor, 
   Activity, 
   MessageSquare, 
   User,
-  LogOut
+  LogOut,
+  UserCircle
 } from 'lucide-react';
 
 interface LayoutProps {
@@ -15,6 +18,13 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   const navItems = [
     { path: '/dashboard', icon: Monitor, label: 'Dashboard' },
@@ -31,6 +41,19 @@ const Layout = ({ children }: LayoutProps) => {
           <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
             System Monitor AI
           </h1>
+        </div>
+        
+        {/* User Info */}
+        <div className="p-4 border-b border-border bg-gradient-to-r from-primary/5 to-accent/5">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center">
+              <UserCircle className="w-6 h-6 text-primary-foreground" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-sm truncate">{user?.name || 'User'}</p>
+              <p className="text-xs text-muted-foreground truncate">{user?.email || ''}</p>
+            </div>
+          </div>
         </div>
         
         <nav className="flex-1 p-4 space-y-2">
@@ -53,13 +76,14 @@ const Layout = ({ children }: LayoutProps) => {
         </nav>
 
         <div className="p-4 border-t border-border">
-          <Link
-            to="/"
-            className="flex items-center gap-3 px-3 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all duration-200"
+          <Button
+            onClick={handleLogout}
+            variant="ghost"
+            className="w-full flex items-center gap-3 px-3 py-2 text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all duration-200 justify-start"
           >
             <LogOut size={20} />
             <span className="font-medium">Logout</span>
-          </Link>
+          </Button>
         </div>
       </div>
 
