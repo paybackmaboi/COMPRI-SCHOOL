@@ -54,7 +54,7 @@ app.post('/api/chat', async (req, res) => {
     }
 
   // Get the Gemini model
- const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+ const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
     // Create a chat session with system instructions
     const chat = model.startChat({
