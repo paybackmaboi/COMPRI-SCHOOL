@@ -8,12 +8,12 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5001;
 
-// Middleware
+
 app.use(cors());
 app.use(express.json());
 
-// Initialize Gemini AI
-const genAI = new GoogleGenerativeAI('AIzaSyBAPh43LdTOW4bJJCBuzrilUntiMGdNojk');
+
+const genAI = new GoogleGenerativeAI('AIzaSyCSCkD4gSYLLgJZdSF0ndaU_j5BcW5yFac');
 
 // System instructions for the AI assistant
 const SYSTEM_INSTRUCTIONS = {
@@ -53,8 +53,8 @@ app.post('/api/chat', async (req, res) => {
       return res.status(400).json({ error: 'Message is required' });
     }
 
-    // Get the Gemini model
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  // Get the Gemini model
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     // Create a chat session with system instructions
     const chat = model.startChat({
