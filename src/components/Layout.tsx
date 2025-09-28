@@ -39,7 +39,7 @@ const Layout = ({ children }: LayoutProps) => {
       <div className="w-64 bg-card border-r border-border flex flex-col">
         <div className="p-6 border-b border-border">
           <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            System Monitor AI
+Intelligent User's
           </h1>
         </div>
         
