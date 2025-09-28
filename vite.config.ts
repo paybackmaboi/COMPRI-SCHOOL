@@ -9,6 +9,7 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'), // ✅ tell Vite that "@" = "src"
     },
   },
+  base: '/',
   server: {
     allowedHosts: [
       'ius.onrender.com',
