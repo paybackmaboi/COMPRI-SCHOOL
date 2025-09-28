@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 dotenv.config();
 
@@ -96,6 +98,18 @@ app.get('/api/health', (req, res) => {
     message: 'System Monitor AI Assistant API is running',
     timestamp: new Date().toISOString()
   });
+});
+
+// Get the directory name of the current module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Serve static files from the React app build directory
+app.use(express.static(path.join(__dirname, 'dist')));
+
+// Handle React routing, return all requests to React app
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 // Start server
