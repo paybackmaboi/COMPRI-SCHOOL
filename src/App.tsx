@@ -11,6 +11,7 @@ import Activity from "./pages/Activity";
 import Assistant from "./pages/Assistant";
 import Account from "./pages/Account";
 import NotFound from "./pages/NotFound";
+import Team from "./pages/Team";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,8 @@ const App = () => (
                 <Account />
               </ProtectedRoute>
             } />
+            {/* Legacy Team Route */}
+            <Route path="/team" element={<Team />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

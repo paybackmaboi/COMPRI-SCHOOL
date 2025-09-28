@@ -8,6 +8,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Shield, Monitor, UserPlus, Eye, EyeOff, CheckCircle, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import EggLegacy from '@/components/EggLegacy';
 
 const Login = () => {
   const [activeTab, setActiveTab] = useState('login');
@@ -97,6 +98,8 @@ const Login = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      {/* Animated floating egg for legacy feature */}
+      <EggLegacy />
       {/* Custom Animations */}
       <style>{`
         @keyframes float-slow {
@@ -345,14 +348,14 @@ const Login = () => {
               <TabsList className="grid w-full grid-cols-2 bg-white/5 backdrop-blur-sm border border-white/10 p-1">
                 <TabsTrigger
                   value="login"
-                  className="flex items-center gap-2 data-[state=active]:bg-white/15 data-[state=active]:text-white transition-all duration-300"
+                  className="flex items-center gap-2 data-[state=active]:bg-white/15 data-[state=active]:text-white transition-all duration-300 text-xs sm:text-base"
                 >
                   <Shield className="w-4 h-4" />
                   Login
                 </TabsTrigger>
                 <TabsTrigger
                   value="register"
-                  className="flex items-center gap-2 data-[state=active]:bg-white/15 data-[state=active]:text-white transition-all duration-300"
+                  className="flex items-center gap-2 data-[state=active]:bg-white/15 data-[state=active]:text-white transition-all duration-300 text-xs sm:text-base"
                 >
                   <UserPlus className="w-4 h-4" />
                   Register
@@ -361,20 +364,20 @@ const Login = () => {
 
               {/* Login Tab */}
               <TabsContent value="login" className="space-y-6 mt-8 relative z-10">
-                <form onSubmit={handleLogin} className="space-y-6">
+                <form onSubmit={handleLogin} className="space-y-4 sm:space-y-6">
           <div className="space-y-2">
                     <Label htmlFor="loginEmail" className="text-blue-100/90 font-medium">Email Address</Label>
                     <div className="relative group">
-            <Input
+                      <Input
                         id="loginEmail"
-              type="email"
+                        type="email"
                         value={loginEmail}
                         onChange={(e) => setLoginEmail(e.target.value)}
                         placeholder="admin@system.com"
-                        className="bg-white/10 backdrop-blur-sm border-white/20 text-white placeholder:text-blue-200/50 focus:border-white/40 focus:bg-white/15 transition-all duration-300 h-12 px-4"
-              required
+                        className="bg-white/10 backdrop-blur-sm border-white/20 text-white placeholder:text-blue-200/50 focus:border-white/40 focus:bg-white/15 transition-all duration-300 h-10 sm:h-12 px-3 sm:px-4 text-sm sm:text-base"
+                        required
                         disabled={isLoading}
-            />
+                      />
                       <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-lg opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                     </div>
           </div>
@@ -382,14 +385,14 @@ const Login = () => {
           <div className="space-y-2">
                     <Label htmlFor="loginPassword" className="text-blue-100/90 font-medium">Password</Label>
                     <div className="relative group">
-            <Input
+                      <Input
                         id="loginPassword"
                         type={showPassword ? "text" : "password"}
                         value={loginPassword}
                         onChange={(e) => setLoginPassword(e.target.value)}
                         placeholder="••••••••"
-                        className="bg-white/10 backdrop-blur-sm border-white/20 text-white placeholder:text-blue-200/50 focus:border-white/40 focus:bg-white/15 transition-all duration-300 h-12 px-4 pr-12"
-              required
+                        className="bg-white/10 backdrop-blur-sm border-white/20 text-white placeholder:text-blue-200/50 focus:border-white/40 focus:bg-white/15 transition-all duration-300 h-10 sm:h-12 px-3 sm:px-4 pr-10 sm:pr-12 text-sm sm:text-base"
+                        required
                         disabled={isLoading}
                       />
                       <button

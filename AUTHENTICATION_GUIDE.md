@@ -1,4 +1,7 @@
+
 # Authentication System Guide
+
+> **Note:** The System Monitor AI is fully responsive and works seamlessly on any screen size, including mobile devices, tablets, and desktops. All authentication pages and forms automatically adapt for comfortable use on small screens.
 
 ## Overview
 The System Monitor AI now includes a comprehensive authentication system with registration and login functionality.

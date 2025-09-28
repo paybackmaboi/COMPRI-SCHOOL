@@ -1,83 +1,20 @@
-# 🖥️ System Monitor AI - Client Presentation
+# System Monitor AI - Client Demo
 
-## Executive Summary
-**Revolutionary System Monitoring & AI Assistant Platform**
+## Demo Overview
+This demo showcases all main features of the System Monitor AI platform. The built-in Assistant is used as a fallback/alternative because the Gemini API is currently unavailable.
 
-A comprehensive, enterprise-grade system monitoring solution with intelligent AI assistance, real-time performance tracking, and professional-grade security monitoring. Built with cutting-edge web technologies and powered by Google's Gemini AI.
+## Key Features
 
----
+- **Authentication:** Secure login, registration, and protected routes.
+- **Dashboard:** Real-time system metrics (CPU, memory, storage, network).
+- **Device Monitoring:** Track connected devices and browser tabs.
+- **Activity:** View system processes, network, and storage analytics.
+- **Security:** Multi-layer authentication, session management, and security status.
+- **AI Assistant:** Chat-based help for system guidance (fallback, not Gemini).
+- **Profile:** Manage user account and profile details.
+- **Modern UI:** Responsive, animated, and easy to use.
 
-## 🎯 **Core Value Proposition**
-
-### **"Transform Your System Monitoring Experience"**
-
-- **🚀 Real-Time Intelligence**: Live system metrics with AI-powered insights
-- **🔒 Enterprise Security**: Multi-layer authentication with secure session management
-- **🤖 AI-Powered Assistant**: Intelligent system guidance using Google Gemini AI
-- **📊 Professional Analytics**: Comprehensive monitoring and performance optimization
-- **🎨 Modern Interface**: Beautiful, responsive design with professional UX
-
----
-
-## 📋 **Complete Feature Overview**
-
-### 🔐 **1. Professional Authentication System**
-- **Secure Registration & Login**: Multi-step validation with email and password requirements
-- **Session Management**: Persistent user sessions with automatic logout
-- **Password Security**: Strong password validation (4+ characters, alphanumeric support)
-- **User Profiles**: Complete account management with profile editing
-- **Access Control**: Protected routes and authenticated navigation
-
-### 📊 **2. Advanced Dashboard & Monitoring**
-- **Real-Time System Metrics**: Live CPU, memory, storage, and network monitoring
-- **Live Temperature Detection**: Dynamic temperature calculation based on system usage
-- **Performance Indicators**: Color-coded status system (Excellent/Good/Warning/Critical)
-- **Device Monitoring**: Connected device tracking with detailed metrics
-- **Browser Tab Monitoring**: Real-time browser activity and resource usage tracking
-
-### 🧠 **3. AI Assistant Powered by Gemini**
-- **Google Gemini Integration**: Professional AI assistant with system-specific knowledge
-- **Intelligent System Guidance**: Expert advice on performance optimization
-- **Real-Time Chat Interface**: Conversational AI with context memory
-- **System-Specific Responses**: Trained on system monitoring and optimization
-- **Professional UI**: Modern chat interface with loading states and error handling
-
-### ⚡ **4. Comprehensive Activity Monitoring**
-- **System Process Tracking**: Real-time process monitoring with resource usage
-- **Security Monitoring**: Threat detection, firewall status, and antivirus monitoring
-- **Network Activity**: Connection monitoring, bandwidth tracking, and latency measurement
-- **Storage Analytics**: Disk usage, space optimization, and performance tracking
-- **Browser Activity**: Current tab monitoring with resource consumption
-
-### 🛡️ **5. Enterprise Security Features**
-- **Multi-Layer Protection**: Authentication, session management, and data protection
-- **Browser Security Compliance**: Respects modern browser security standards
-- **Secure API Integration**: Encrypted communication with backend services
-- **Data Privacy**: Local storage with no external data transmission
-- **Professional Security UI**: Clear security status indicators
-
----
-
-## 🎨 **User Experience Excellence**
-
-### **Modern Interface Design**
-- **Responsive Layout**: Works perfectly on desktop, tablet, and mobile
-- **Professional Aesthetics**: Gradient designs, smooth animations, and modern typography
-- **Intuitive Navigation**: Clean sidebar navigation with clear section organization
-- **Real-Time Updates**: Live data refresh with smooth transitions
-- **Loading States**: Professional loading animations and error handling
-
-### **Performance Optimization**
-- **Lightning Fast**: Optimized React components with efficient state management
-- **Smooth Animations**: CSS transitions and professional micro-interactions
-- **Responsive Charts**: Real-time data visualization with progress indicators
-- **Memory Efficient**: Optimized resource usage and cleanup
-
----
-
-## 🔧 **Technical Architecture**
-
-### **Frontend Stack**
+All features are available for demo. The Assistant provides basic help and fallback responses while Gemini is offline.
 - **React 18**: Latest React with modern hooks and concurrent features
 - **TypeScript**: Full type safety and IntelliSense support
 - **Tailwind CSS**: Utility-first CSS framework with custom components
