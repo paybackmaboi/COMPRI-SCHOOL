@@ -100,6 +100,14 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Serve static files from the Vite build output directory
+app.use(express.static(path.join(__dirname, 'dist')));
+
+// Handle all other routes by serving the index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
+
 // Get the directory name of the current module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
