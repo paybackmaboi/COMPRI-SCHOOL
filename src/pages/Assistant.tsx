@@ -56,7 +56,18 @@ const Assistant = () => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = async () => {
+  // Checks if the prompt is system-related
+  const isSystemRelated = (prompt: string) => {
+    const keywords = [
+      'system', 'device', 'performance', 'cpu', 'memory', 'storage', 'network', 'security',
+      'dashboard', 'activity', 'monitor', 'account', 'profile', 'metrics', 'status', 'optimize',
+      'usage', 'connected', 'activity', 'logs', 'settings', 'authentication', 'browser', 'os', 'screen', 'online', 'process', 'tab', 'resource'
+    ];
+    const lowerPrompt = prompt.toLowerCase();
+    return keywords.some(word => lowerPrompt.includes(word));
+  };
+
+  const handleSendMessage = () => {
     if (!inputMessage.trim() || isLoading) return;
 
     const userMessage: Message = {
@@ -71,45 +82,40 @@ const Assistant = () => {
     setIsLoading(true);
     setError('');
 
-    try {
-      // Prepare conversation history for the API
-      const conversationHistory = messages.map(msg => ({
-        role: msg.type,
-        content: msg.content
-      }));
-
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001';
-      const response = await fetch(`${apiUrl}/api/chat`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: userMessage.content,
-          conversationHistory: conversationHistory
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        const aiMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          type: 'assistant',
-          content: data.response,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        };
-
-        setMessages(prev => [...prev, aiMessage]);
+    setTimeout(() => {
+      let aiContent = '';
+      if (isSystemRelated(userMessage.content)) {
+        // Simple local responses for system-related prompts
+        if (userMessage.content.toLowerCase().includes('cpu')) {
+          aiContent = 'You can monitor CPU usage in the dashboard. It shows real-time percentage and temperature for all cores.';
+        } else if (userMessage.content.toLowerCase().includes('memory')) {
+          aiContent = 'Memory usage is displayed in the dashboard. You can optimize memory by closing unused applications.';
+        } else if (userMessage.content.toLowerCase().includes('device')) {
+          aiContent = 'Connected devices are listed in the dashboard. You can view device metrics and status there.';
+        } else if (userMessage.content.toLowerCase().includes('security')) {
+          aiContent = 'For security, ensure your system is updated and monitor network connections in the dashboard.';
+        } else if (userMessage.content.toLowerCase().includes('optimize')) {
+          aiContent = 'To optimize system performance, monitor resource usage and close unnecessary processes.';
+        } else if (userMessage.content.toLowerCase().includes('dashboard')) {
+          aiContent = 'The dashboard provides an overview of system metrics including CPU, memory, storage, and network speed.';
+        } else if (userMessage.content.toLowerCase().includes('activity')) {
+          aiContent = 'The activity page shows system logs and user interactions for historical tracking.';
+        } else {
+          aiContent = "I'm here to help with system monitoring, device management, and performance insights. Please ask about system features or metrics.";
+        }
       } else {
-        setError(data.error || 'Failed to get AI response');
+        aiContent = "Sorry, I can only assist with system monitoring, device management, and related topics.";
       }
-    } catch (error) {
-      console.error('Chat error:', error);
-      setError('Failed to connect to AI assistant. Please make sure the backend server is running.');
-    } finally {
+
+      const aiMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        type: 'assistant',
+        content: aiContent,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+      setMessages(prev => [...prev, aiMessage]);
       setIsLoading(false);
-    }
+    }, 800); // Simulate response delay
   };
 
   const handleSuggestedQuestion = (question: string) => {

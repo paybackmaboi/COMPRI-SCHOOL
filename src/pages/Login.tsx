@@ -314,7 +314,7 @@ const Login = () => {
                 <Monitor className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
               </div>
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-white via-blue-100 to-cyan-100 bg-clip-text text-transparent mb-3">
-            System Monitor AI
+            Intelligent User's AI
           </h1>
               <p className="text-sm sm:text-base text-blue-100/80 mt-2">
             Secure access to your system analytics
